@@ -1,0 +1,13 @@
+package com.tweek.demo;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class CsvuploaderApplicationTests {
+
+	@Test
+	void contextLoads() {
+	}
+
+}
