@@ -20,6 +20,7 @@ import com.tweek.UserRegistration;
 import com.tweek.model.FileResponse;
 import com.tweek.model.User;
 import com.tweek.service.IFileSytemStorage;
+import com.tweek.validations.FilenameValidator;
 
 @RestController
 @RequestMapping("/api")
@@ -47,6 +48,8 @@ public class FileController {
 	
 	@PostMapping("uploadfile")
     public ResponseEntity<FileResponse> uploadSingleFile (@RequestParam("file") MultipartFile file) {
+		String fileName = file.getOriginalFilename();
+		FilenameValidator.validate(fileName);
         String upfile = fileSytemStorage.saveFile(file);
         
         return ResponseEntity.status(HttpStatus.OK).body(new FileResponse(upfile,"File uploaded with success!"));
