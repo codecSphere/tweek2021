@@ -1,5 +1,6 @@
 package com.tweek.service;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -48,6 +49,23 @@ public class FileSystemStorageService implements IFileSytemStorage {
 		} catch (Exception e) {
 			throw new FileStorageException("Could not upload file");
 		}
+	}
+
+	private String transformFilename(String identifier, String filename) {
+
+		filename = filename.trim().toLowerCase().replaceAll("\\s+", "_");
+
+		if(filename.contains(".")) {
+			filename = filename.substring(0, filename.lastIndexOf("."));
+		}
+
+		return filename + "_" + identifier;
+	}
+
+	public void saveFile(String identifier, MultipartFile file) throws IOException {
+		String filename = transformFilename(identifier, file.getOriginalFilename());
+		Path dfile = this.dirLocation.resolve(filename);
+		Files.copy(file.getInputStream(), dfile, StandardCopyOption.REPLACE_EXISTING);
 	}
 
 	@Override
