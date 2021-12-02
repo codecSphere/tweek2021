@@ -6,6 +6,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import javax.annotation.PostConstruct;
+
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -18,6 +20,8 @@ import com.tweek.properties.FileUploadProperties;
 
 @Service
 public class FileSystemStorageService implements IFileSytemStorage {
+	private static final String FILE_NAME_SEPARATOR = "_";
+	private static final String FILE_NAME_PREFIX = "object";
 	private final Path dirLocation;
 
 	@Autowired
@@ -28,7 +32,6 @@ public class FileSystemStorageService implements IFileSytemStorage {
 	@Override
 	@PostConstruct
 	public void init() {
-		// TODO Auto-generated method stub
 		try {
 			Files.createDirectories(this.dirLocation);
 		} catch (Exception ex) {
@@ -37,17 +40,21 @@ public class FileSystemStorageService implements IFileSytemStorage {
 	}
 
 	@Override
-	public String saveFile(MultipartFile file) {
-		// TODO Auto-generated method stub
+	public String saveFile(MultipartFile file, String collectionName, String key) {
 		try {
 			String fileName = file.getOriginalFilename();
-			Path dfile = this.dirLocation.resolve(fileName);
+			Path dfile = this.dirLocation.resolve(constructNewFileName(fileName, collectionName, key));
 			Files.copy(file.getInputStream(), dfile, StandardCopyOption.REPLACE_EXISTING);
 			return fileName;
 
 		} catch (Exception e) {
 			throw new FileStorageException("Could not upload file");
 		}
+	}
+
+	private String constructNewFileName(String fullFileName, String collectionName, String key) {
+		return FILE_NAME_PREFIX + FILE_NAME_SEPARATOR + collectionName + FILE_NAME_SEPARATOR + key + FILE_NAME_SEPARATOR
+				+ System.currentTimeMillis() + "." + FilenameUtils.getExtension(fullFileName);
 	}
 
 	@Override

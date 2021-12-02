@@ -47,12 +47,13 @@ public class FileController {
 	}
 	
 	@PostMapping("uploadfile")
-    public ResponseEntity<FileResponse> uploadSingleFile (@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<FileResponse> uploadSingleFile (@RequestParam("file") MultipartFile file, @RequestParam("collectionName") String collectionName, @RequestParam("key") String key) {
 		String fileName = file.getOriginalFilename();
 		FilenameValidator.validate(fileName);
-        String upfile = fileSytemStorage.saveFile(file);
+		System.out.println("key is: " + key);
+        String upfile = fileSytemStorage.saveFile(file, collectionName, key);
         
-        return ResponseEntity.status(HttpStatus.OK).body(new FileResponse(upfile,"File uploaded with success!"));
+        return ResponseEntity.status(HttpStatus.OK).body(new FileResponse(upfile,"File uploaded successfully!"));
     }
 	
 }
