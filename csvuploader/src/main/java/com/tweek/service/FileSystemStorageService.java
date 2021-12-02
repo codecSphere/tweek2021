@@ -1,5 +1,6 @@
 package com.tweek.service;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,7 +21,7 @@ import com.tweek.properties.FileUploadProperties;
 
 @Service
 public class FileSystemStorageService implements IFileSytemStorage {
-	private static final String FILE_NAME_SEPARATOR = "_";
+	private static final String FILE_NAME_SEPARATOR = "::";
 	private static final String FILE_NAME_PREFIX = "object";
 	private final Path dirLocation;
 
@@ -43,7 +44,7 @@ public class FileSystemStorageService implements IFileSytemStorage {
 	public String saveFile(MultipartFile file, String collectionName, String key) {
 		try {
 			String fileName = file.getOriginalFilename();
-			Path dfile = this.dirLocation.resolve(constructNewFileName(fileName, collectionName, key));
+			Path dfile = this.dirLocation.resolve(constructNewFileName(collectionName, key));
 			Files.copy(file.getInputStream(), dfile, StandardCopyOption.REPLACE_EXISTING);
 			return fileName;
 
@@ -52,9 +53,8 @@ public class FileSystemStorageService implements IFileSytemStorage {
 		}
 	}
 
-	private String constructNewFileName(String fullFileName, String collectionName, String key) {
-		return FILE_NAME_PREFIX + FILE_NAME_SEPARATOR + collectionName + FILE_NAME_SEPARATOR + key + FILE_NAME_SEPARATOR
-				+ System.currentTimeMillis() + "." + FilenameUtils.getExtension(fullFileName);
+	private String constructNewFileName(String collectionName, String key) {
+		return FILE_NAME_PREFIX + FILE_NAME_SEPARATOR + collectionName + FILE_NAME_SEPARATOR +  key + FILE_NAME_SEPARATOR + System.currentTimeMillis();
 	}
 
 	@Override
