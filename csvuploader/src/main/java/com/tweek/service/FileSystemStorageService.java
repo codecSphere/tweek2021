@@ -7,6 +7,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import javax.annotation.PostConstruct;
+
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -19,6 +21,8 @@ import com.tweek.properties.FileUploadProperties;
 
 @Service
 public class FileSystemStorageService implements IFileSytemStorage {
+	private static final String FILE_NAME_SEPARATOR = "::";
+	private static final String FILE_NAME_PREFIX = "object";
 	private final Path dirLocation;
 
 	@Autowired
@@ -29,7 +33,6 @@ public class FileSystemStorageService implements IFileSytemStorage {
 	@Override
 	@PostConstruct
 	public void init() {
-		// TODO Auto-generated method stub
 		try {
 			Files.createDirectories(this.dirLocation);
 		} catch (Exception ex) {
@@ -38,11 +41,10 @@ public class FileSystemStorageService implements IFileSytemStorage {
 	}
 
 	@Override
-	public String saveFile(MultipartFile file) {
-		// TODO Auto-generated method stub
+	public String saveFile(MultipartFile file, String collectionName, String key) {
 		try {
 			String fileName = file.getOriginalFilename();
-			Path dfile = this.dirLocation.resolve(fileName);
+			Path dfile = this.dirLocation.resolve(constructNewFileName(collectionName, key));
 			Files.copy(file.getInputStream(), dfile, StandardCopyOption.REPLACE_EXISTING);
 			return fileName;
 
@@ -51,21 +53,8 @@ public class FileSystemStorageService implements IFileSytemStorage {
 		}
 	}
 
-	private String transformFilename(String identifier, String filename) {
-
-		filename = filename.trim().toLowerCase().replaceAll("\\s+", "_");
-
-		if(filename.contains(".")) {
-			filename = filename.substring(0, filename.lastIndexOf("."));
-		}
-
-		return filename + "_" + identifier;
-	}
-
-	public void saveFile(String identifier, MultipartFile file) throws IOException {
-		String filename = transformFilename(identifier, file.getOriginalFilename());
-		Path dfile = this.dirLocation.resolve(filename);
-		Files.copy(file.getInputStream(), dfile, StandardCopyOption.REPLACE_EXISTING);
+	private String constructNewFileName(String collectionName, String key) {
+		return FILE_NAME_PREFIX + FILE_NAME_SEPARATOR + collectionName + FILE_NAME_SEPARATOR +  key + FILE_NAME_SEPARATOR + System.currentTimeMillis();
 	}
 
 	@Override

@@ -2,7 +2,7 @@ package com.tweek.controller;
 
 import java.util.List;
 
-import com.tweek.properties.FileUploadProperties;
+import com.tweek.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,12 +44,12 @@ public class FileController {
 	}
 	
 	@PostMapping("uploadfile")
-    public ResponseEntity<FileResponse> uploadSingleFile (@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<FileResponse> uploadSingleFile (@RequestParam("file") MultipartFile file, @RequestParam("collectionName") String collectionName, @RequestParam("key") String key) {
 		String fileName = file.getOriginalFilename();
 		FilenameValidator.validate(fileName);
-        String upfile = fileSystemStorage.saveFile(file);
-        
-        return ResponseEntity.status(HttpStatus.OK).body(new FileResponse(upfile,"File uploaded with success!"));
+		System.out.println("key is: " + key);
+        String upfile = fileSystemStorage.saveFile(file, collectionName, key);
+        return ResponseEntity.status(HttpStatus.OK).body(new FileResponse(upfile,"File uploaded successfully!"));
     }
 
 	@PostMapping("email-inbound")
@@ -102,7 +102,9 @@ public class FileController {
 			}
 
 			try {
-				fileSystemStorage.saveFile(identifier, request.getFileMap().get(key));
+				MultipartFile file = request.getFile(key);
+				String collectionName = CommonUtils.getCollectionName(file.getOriginalFilename());
+				fileSystemStorage.saveFile(file, collectionName, identifier);
 			} catch (Exception e) {
 				logger.error("Unable to save file: ", e);
 			}

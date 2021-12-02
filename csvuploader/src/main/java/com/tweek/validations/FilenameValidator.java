@@ -7,8 +7,7 @@ import com.tweek.exception.UnsupportedFileFormatException;
 public class FilenameValidator {
 
 	public static void validate(String filename) {
-		String extension = FilenameUtils.getExtension(filename);
-		if (!"csv".equalsIgnoreCase(extension)) {
+		if (!FilenameUtils.isExtension(filename, "csv")) {
 			throw new UnsupportedFileFormatException("Only csv file format is supported.");
 		}
 	}

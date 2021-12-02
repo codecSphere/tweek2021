@@ -8,9 +8,7 @@ import java.io.IOException;
 public interface IFileSytemStorage {
 	void init();
 
-	String saveFile(MultipartFile file);
-
-	void saveFile(String identifier, MultipartFile file) throws IOException;
+	String saveFile(MultipartFile file, String collectionName, String key);
 
 	Resource loadFile(String fileName);
 }
