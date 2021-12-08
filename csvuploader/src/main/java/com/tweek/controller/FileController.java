@@ -1,7 +1,11 @@
 package com.tweek.controller;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
+import com.tweek.properties.EmailSourceProperties;
+import com.tweek.properties.FileUploadProperties;
 import com.tweek.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +29,13 @@ public class FileController {
 	final static Logger logger = LoggerFactory.getLogger(FileController.class);
 	@Autowired
     IFileSytemStorage fileSystemStorage;
+
+	private final String emailWriteKey;
+
+	@Autowired
+	public FileController(EmailSourceProperties emailSourceProperties) {
+		emailWriteKey = emailSourceProperties.getWriteKey();
+	}
 
 	@GetMapping("users")
 	public List<User> getUsers() {
@@ -57,19 +68,19 @@ public class FileController {
 
 		logger.info("Got email inbound request.");
 		int attachments = 0;
-		String identifier = null;
+		String identifier = emailWriteKey;
 
-		if(!request.getParameterMap().containsKey("to") || request.getParameterMap().get("to").length == 0) {
-			logger.error("'to' parameter missing.");
-			return ResponseEntity.status(HttpStatus.OK).build();
-		}
-
-		identifier = request.getParameterMap().get("to")[0].split("@")[0];
-
-		if(identifier == null || identifier.isEmpty()) {
-			logger.error("Couldn't parse identifier");
-			return ResponseEntity.status(HttpStatus.OK).build();
-		}
+//		if(!request.getParameterMap().containsKey("to") || request.getParameterMap().get("to").length == 0) {
+//			logger.error("'to' parameter missing.");
+//			return ResponseEntity.status(HttpStatus.OK).build();
+//		}
+//
+//		identifier =  request.getParameterMap().get("to")[0].split("@")[0];
+//
+//		if(identifier == null || identifier.isEmpty()) {
+//			logger.error("Couldn't parse identifier");
+//			return ResponseEntity.status(HttpStatus.OK).build();
+//		}
 
 		logger.info("Identifier: {}", identifier);
 
