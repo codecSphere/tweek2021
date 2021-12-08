@@ -59,8 +59,8 @@ public class FileController {
 		String fileName = file.getOriginalFilename();
 		FilenameValidator.validate(fileName);
 		System.out.println("key is: " + key);
-        String upfile = fileSystemStorage.saveFile(file, collectionName, key);
-        return ResponseEntity.status(HttpStatus.OK).body(new FileResponse(upfile,"File uploaded successfully!"));
+		String upfile = fileSystemStorage.saveFile(file, collectionName, key);
+		return ResponseEntity.status(HttpStatus.OK).body(new FileResponse(upfile,"File uploaded successfully!"));
     }
 
 	@PostMapping("email-inbound")

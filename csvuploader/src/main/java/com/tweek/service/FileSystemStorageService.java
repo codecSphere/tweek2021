@@ -21,8 +21,8 @@ import com.tweek.properties.FileUploadProperties;
 
 @Service
 public class FileSystemStorageService implements IFileSytemStorage {
-	private static final String FILE_NAME_SEPARATOR = "::";
-	private static final String FILE_NAME_PREFIX = "object";
+	private static final String FILE_NAME_SEPARATOR = "_";
+	//private static final String FILE_NAME_PREFIX = "object";
 	private final Path dirLocation;
 
 	@Autowired
@@ -54,7 +54,7 @@ public class FileSystemStorageService implements IFileSytemStorage {
 	}
 
 	private String constructNewFileName(String collectionName, String key) {
-		return FILE_NAME_PREFIX + FILE_NAME_SEPARATOR + collectionName + FILE_NAME_SEPARATOR +  key + FILE_NAME_SEPARATOR + System.currentTimeMillis();
+		return System.currentTimeMillis() + FILE_NAME_SEPARATOR + key + FILE_NAME_SEPARATOR + collectionName;
 	}
 
 	@Override
